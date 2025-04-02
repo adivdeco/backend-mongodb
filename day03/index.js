@@ -2,7 +2,7 @@ const express = require('express');
 
 const app = express();
 const main = require('./database');
-const User = require('./module/user');
+const User = require('./module/userSchemas');
 
 
 
@@ -12,12 +12,19 @@ app.use(express.json()) // to parse the json data from the request body
 const spark = new User ({name:"hell and clean"})   // this is just to check if the model is working or not
 console.log(spark.name)
 
-/
+app.get("/user" , async (req, res) => {
+    const data = await User.find({})
+    res.send({message:"hear is all data",data})
+})
 
 app.post('/user',async (req, res) => {
-    const data = User.create(req.body)
+   try{
+    const data = await User.create(req.body)
     res.send({message:"all set" , data})
-                 
+}
+catch(err){
+    res.send({message:"error in data", err})
+          }
 })
 
 main()
