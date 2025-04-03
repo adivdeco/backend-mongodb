@@ -25,11 +25,45 @@ const userSchema = new Schema({
    age:{
     type:Number,
     min:10,
-    max:80
+    max:80, 
+    validate(value){
+        if(value < 10 || value > 80){
+            throw new Error('age should be between 10 and 80')
+        }
+    }
+   },
+   gender:{
+    type:String,
+    enum:["male","femal","other"],
+    required:true,
    },
    email:{
     type:String,
-    }
+    },
+    photo:{
+        type:String,
+        default:"annomaous img.png"
+    },
+    createdat:{
+        type:Date,
+        default:Date.now
+    },
+    updatedat:{
+        type:Date,
+        default:Date.now
+    },
+    isDeleted:{
+        type:Boolean,
+        default:false
+    },
+    deletedAt:{
+        type:Date,
+        default:null
+    },
+  
+    
+  
+
    
 
 
