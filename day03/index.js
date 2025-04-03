@@ -3,8 +3,7 @@ const express = require('express');
 const app = express();
 const main = require('./database');
 const User = require('./module/userSchemas');
-
-
+const validateUser = require('./utils/validator');
 
 app.use(express.json()) // to parse the json data from the request body
 
@@ -29,26 +28,8 @@ app.get('/user/:id', async (req, res) => {
 app.post('/user',async (req, res) => {
 
    try{
-    // if(!req.body.name){
-    //     return res.status(400).send({message:"please provide name"})
-    // }
-    // if(!req.body.age){
-    //     return res.status(400).send({message:"please provide age"})
-    // } 
-  const mandatoryField = ["name","age","gender"]
-//   const isValid = mandatoryField.every((field)=>Object.keys(req.body).includes(field))
-  
-
-  const isValid = mandatoryField.every((field) => {
-    return req.body[field] !== undefined
-  })
- if(!isValid){
-   throw new Error("please provide all mandatory fields")
-}
-//     // const isValidEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(req.body.email)
-    // if(!isValidEmail){
-    //     return res.status(400).send({message:"please provide valid email"})
-    // }
+    
+    validateUser(req.body);  //pass req.body to the function
 
      await User.create(req.body)
     res.send("user created successfully")
