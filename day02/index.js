@@ -4,8 +4,12 @@ const app = express();
 const main = require('./database');
 const Book = require('./module/bookschema');
 
+
+
 const spark = new Book ({name:"hell and clean"})   // this is just to check if the model is working or not
 console.log(spark.name) 
+
+
 
 app.use(express.json()) // to parse the json data from the request body
 
