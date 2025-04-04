@@ -2,7 +2,7 @@
 
 const bcrypt = require("bcrypt")
 
-const passward = "adiv05102006"
+const passward = "helo-world"
 
 async function hashing() {
     
@@ -10,8 +10,8 @@ async function hashing() {
     const hashpass = await bcrypt.hash(passward,salt)  // what is the salt round =>2^10 run this 10 times
     
     
-    // console.log(hashpass)
-    // console.log(salt);
+    console.log(hashpass)
+    console.log(salt);
     
     
     
