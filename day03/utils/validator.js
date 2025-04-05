@@ -5,7 +5,7 @@ function validateUser(data) {
         //     return res.status(400).send({message:"please provide name"})
         // }
 
-      const mandatoryField = ["name","age","gender"]
+      const mandatoryField = ["name","age","passward"]
       const isValid = mandatoryField.every((field)=>Object.keys(data).includes(field))
       
     

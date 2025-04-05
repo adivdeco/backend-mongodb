@@ -40,6 +40,15 @@ const userSchema = new Schema({
    email:{
     type:String,
     },
+    passward:{
+        type:String,
+        required:true,
+        validate(value){
+            if(value.includes(' ')){
+                throw new Error('passward should not contain space')
+            }
+        }
+    },
     photo:{
         type:String,
         default:"annomaous img.png"
