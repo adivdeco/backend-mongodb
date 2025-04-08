@@ -61,14 +61,14 @@ const userSchema = new Schema({
         type:Date,
         default:Date.now
     },
-    isDeleted:{
-        type:Boolean,
-        default:false
-    },
-    deletedAt:{
-        type:Date,
-        default:null
-    },
+    // isDeleted:{
+    //     type:Boolean,
+    //     default:false
+    // },
+    // deletedAt:{
+    //     type:Date,
+    //     default:null
+    // },
   
     
   

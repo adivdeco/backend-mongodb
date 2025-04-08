@@ -5,7 +5,6 @@ const main = require('./database');
 const User = require('./module/userSchemas');
 const validateUser = require('./utils/validator');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 
 app.use(express.json()) // to parse the json data from the request body
 
@@ -34,18 +33,22 @@ app.post('/register',async (req, res) => {
 
 app.post('/login',async (req, res) => {
     try{
-      const people = await User.findById(req.body._id)
-
-        if(req.body.email === people.email){
-            return res.status(400).send({message:"invalid Crentials"})
+       const people = await User.findById(req.body._id)
+        
+       const validemail = (req.body.email===people.email)
+        if(!validemail){
+            return res.status(400).send({message:"invaalid Crentials"})
         }
-     const passMatch = await bcrypt.compare(req.bpdy.passward ,people.passward)
+     const passMatch = await bcrypt.compare(req.body.passward ,people.passward)
         if(!passMatch){
              throw new Error("invalid Crentials")
         }
+       if (validemail , passMatch) {
+        console.log("login successfully")
+       } res.send({message:"login successfully",people})
     }
     catch(err){
-        res.send("Error"+ err.message)
+        res.send("Error "+ err.message)
     }
 }
 )
