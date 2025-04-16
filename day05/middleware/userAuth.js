@@ -9,7 +9,7 @@ const userAuth = async (req, res, next) => {
     }
 
     
-    const payload =jwt.verify(tocken,"adiv1234")
+    const payload =jwt.verify(tocken,process.env.Secreat_key)
     const {_id} = payload
 
     if(!_id){

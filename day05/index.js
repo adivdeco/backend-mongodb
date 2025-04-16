@@ -8,6 +8,7 @@ const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser') // to parse the cookies from the request
 const jwt = require('jsonwebtoken');
 const userAuth = require('./middleware/userAuth') // to authenticate the user
+require('dotenv').config() // to load the environment variables from .env file@@
 
 
 app.use(express.json()) // to parse the json data from the request body
@@ -15,6 +16,7 @@ app.use(cookieParser()) // to parse the cookies from the request
 
 const spark = new User ({name:"hell and clean"})   // this is just to check if the model is working or not
 console.log(spark.name)
+
 
 
 app.post('/register',async (req, res) => {
@@ -38,21 +40,27 @@ app.post('/register',async (req, res) => {
 app.post('/login',async (req, res) => {
     try{
     //    const people = await User.findById(req.body._id)
-    const people = await User.findOne({emailid:req.body.emailID})
+    const people = await User.findOne({email:req.body.email})
         if(!people){
             throw new Error("invasslid Crentials")
         }
 
         // comparing passward
-     const passMatch = await bcrypt.compare(req.body.passward ,people.passward)
-        if(!passMatch){
-             throw new Error("invalid Crentials")
-        }
-       
+
+      // const passMatch = await bcrypt.compare(req.body.passward ,people.passward)
+
+     const passMatch = people.verifyPassward(req.body.passward) // # userauth m verifyPassward fun, hai or wha p .y function people ki passward ko comp krta hai   
+    if(!passMatch){
+                  throw new Error("invalid pass")
+         }
+    
+    
+        
 
         // jwt tocken
 
-        const tocken = jwt.sign({_id: people._id , email: people.email}, "adiv1234" )
+        const tocken = people.getJWT() // # userauth m getJWT function hai or wha p y function people ki id or email ko sign krta hai
+        // const tocken = jwt.sign({_id: people._id , email: people.email}, process.env.Secreat_key )
         res.cookie("tocken",tocken)  //=> name of the cookie , value of the cookie in the browser in {code form} create using given secret key & payload
 
         res.send("login successfully")
@@ -93,8 +101,8 @@ main()
 .then( async () => {
     console.log('connected to database')
 
-    app.listen(3000, () => {
-        console.log('server is running on port 3000')
+    app.listen(process.env.PORT, () => {
+        console.log('server is running on port ')
     })    
 })
 .catch((err) => {

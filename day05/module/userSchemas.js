@@ -1,4 +1,5 @@
-
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
@@ -79,6 +80,30 @@ const userSchema = new Schema({
 
 });
 
+userSchema.methods.getJWT = function(){
+   const ans = jwt.sign({_id: this._id , email: this.email}, process.env.Secreat_key )
+  
+   return ans
+}
+
+userSchema.methods.verifyPassward = async function(userpassward){
+      await bcrypt.compare(userpassward , this.passward)
+       
+       
+       
+}
+// userSchema.methods.verifyPassward = async function(userpassword) {
+//     return await bcrypt.compare(userpassword, this.passward);
+//   };
+
+
+//static method to hash the password before saving
+// static function => it is used to create a method that can be called on the model itself, rather than on an instance of the model.
+// userSchema.statics.hashPassword = async function(password) {
+//     return await bcrypt.compare(password, this.passward);
+//   };
+
+// static method to check if the password is valid
 
 
 const User = mongoose.model('user', userSchema);
