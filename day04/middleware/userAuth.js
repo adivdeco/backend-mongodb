@@ -53,6 +53,7 @@ module.exports = userAuth;
 //         }
 
 //         // Extract the token by removing the "Bearer " prefix
+
 //         const tocken = authHeader.split(" ")[1];
 
 //         // Verify the token
