@@ -37,10 +37,12 @@ authrouter.post('/login',async (req, res) => {
 
       // const passMatch = await bcrypt.compare(req.body.passward ,people.passward)
 
-     const passMatch = people.verifyPassward(req.body.passward) // # userauth m verifyPassward fun, hai or wha p .y function people ki passward ko comp krta hai   
+     const passMatch = await people.verifyPassward(req.body.passward) // # userauth m verifyPassward fun, hai or wha p .y function people ki passward ko comp krta hai   
     if(!passMatch){
                   throw new Error("invalid pass")
          }
+         console.log(passMatch);
+         
     
     
         
@@ -49,13 +51,29 @@ authrouter.post('/login',async (req, res) => {
 
         const tocken = people.getJWT() // # userauth m getJWT function hai or wha p y function people ki id or email ko sign krta hai
         // const tocken = jwt.sign({_id: people._id , email: people.email}, process.env.Secreat_key )
-        res.cookie("tocken",tocken)  //=> name of the cookie , value of the cookie in the browser in {code form} create using given secret key & payload
+        res.cookie("tocken",tocken,{
+            httpOnly: true, // Secure the cookie
+            secure: process.env.NODE_ENV === "production", })
+            //   //=> name of the cookie , value of the cookie in the browser in {code form} create using given secret key & payload
 
         res.send("login successfully")
+
+        
     }catch(err){
         res.send("Error "+ err.message)
     }
 }
 )
+
+authrouter.post('/logout',async (req, res) => {
+    try{
+        res.cookie("tocken" , null ,{expires: new Date(Date.now()),
+            httpOnly: true, // Secure the cookie
+        }) 
+        res.send("logout successfully")
+    }catch(err){
+        res.send("Error "+ err.message)
+    }
+})
 
 module.exports = authrouter
