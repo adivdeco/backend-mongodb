@@ -41,7 +41,6 @@ authrouter.post('/login',async (req, res) => {
     if(!passMatch){
                   throw new Error("invalid pass")
          }
-         console.log(passMatch);
          
     
     

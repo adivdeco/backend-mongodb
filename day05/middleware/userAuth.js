@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken")
 const User = require("../module/userSchemas")
 
 const userAuth = async (req, res, next) => {
-
+try{
     const {tocken} = req.cookies
     if(!tocken){
         throw new Error("invalid tocken")
@@ -22,6 +22,11 @@ const userAuth = async (req, res, next) => {
         }
         req.data = data;
 next()
+
+} catch (err) {
+    res.status(401).send({ message: "Unauthorized: " + err.message });
+}
+
 }
 
 // if (!tocken || !tocken.startsWith("Bearer ")) {
