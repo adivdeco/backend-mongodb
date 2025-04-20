@@ -62,7 +62,7 @@ authrouter.post('/logout',userAuth, async (req, res) => {
        console.log(payload);
        
        await redisClient.set(`tocken${tocken}`,"blocked")
-       await redisClient.expire(`tocken${tocken}`,1800) //# time in sec
+    //    await redisClient.expire(`tocken${tocken}`,1800) //# time in sec
        await redisClient.expireAt(`tocken${tocken}`,payload.exp)
 
         res.cookie("tocken" , null ,{expires: new Date(Date.now()),
