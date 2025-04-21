@@ -1,43 +1,68 @@
-const redisClient = require('../config/redis')
 
-const rateLimiter = async (req,res,next)=>{
+const redisClient = require('../config/redis');
 
-    try {
-        const ip = req.ip;
+const rateLimiter = async (req, res, next) => {
+  try {
+    const ip = req.ip;
+    const cooldownKey = `cooldown:${ip}`;
 
-        const no_ofreq = await redisClient.incr(ip)        
-        console.log("Request count:", no_ofreq);
+    // 1. Check Cooldown First
+    const cooldownTTL = await redisClient.ttl(cooldownKey);
 
-        let ttl = await redisClient.ttl(ip)    // ⏳ How many seconds are left before this key (IP) automatically expires?”
+    console.log(`Cooldown TTL: ${cooldownTTL}`);
 
-        if(no_ofreq === 1){
-            await redisClient.expire(ip,20)  //in sec 
-            ttl = 20;
-          }
+    if (cooldownTTL > 0) {
+      res.setHeader('Retry-After', cooldownTTL);
+      return res.status(429).send(`🕐 Please wait ${cooldownTTL}s before your next request.`);
+    }
 
-           if (ttl === -1) {                   //* checks if .exp() is miss from hear it get added
-            await redisClient.expire(ip , 20)  //10s
-            ttl = 20;
-        }
+// another logic
 
-        if (no_ofreq>5) {
-            console.log(`User ${ip} excedded rate-limit, Wait ${ttl} seconds`);
-              
-            // Set Retry-After header for client
-            res.setHeader('Retry-After', ttl);
-      return res.status(429).send(`Too many requests. Try again after ${ttl} seconds.`);
-            } 
-  
-    next()
-}
+    // if (cooldownTTL === -2 || cooldownTTL === -1) {
+    //     await redisClient.set(cooldownKey, '1', { EX: 10, overwrite: true });
+    //   }
+    //   console.log(`Request  allowed. wait 5s for next request.`);
 
 
-   catch (error) {
-    console.error("RateLimiter Error:"+error);
-    res.status(500).send("Error: " + error.message);
-}
+    // 2. Rate Limiting Logic
+    const reqCount = await redisClient.incr(ip);
+    let ttl = await redisClient.ttl(ip);
 
-}
+    if (reqCount === 1) {
+      await redisClient.expire(ip, 20); // set 20s window
+      ttl = 20;
+    }
 
+    if (ttl === -1) {
+      await redisClient.expire(ip, 20); // ensure expiry always exists
+      ttl = 20;
+    }
 
-module.exports = rateLimiter
+    console.log("no of req",reqCount);        // number of request
+    // console.log(`TTL Left: ${ttl}s`);     // ratelimit time
+
+    
+
+    if (reqCount > 5) {
+      res.setHeader('Retry-After', ttl);
+      return res.status(429).send(`🚫 Too many requests. Try again in ${ttl} seconds.`);
+    }
+
+    //  Set Cooldown AFTER the request is allowed
+
+    await redisClient.set(cooldownKey, '1', {
+        EX:5,  // 10 seconds cooldown
+        overwrite:true
+    }); 
+
+    console.log(`Request  allowed. wait 5s for next request.`);
+
+    next();
+
+  } catch (err) {
+    console.error("RateLimiter Error:", err);
+    res.status(500).send("Server error");
+  }
+};
+
+module.exports = rateLimiter;
