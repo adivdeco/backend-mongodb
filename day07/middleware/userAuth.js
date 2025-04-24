@@ -23,7 +23,7 @@ try{
         }
         req.data = data;
 
-       
+    //    part of logout
         const Blocktocken = await redisClient.exists(`tocken${tocken}`)
         if (Blocktocken) {
             throw new Error ("tocken chorr")

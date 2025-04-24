@@ -33,12 +33,12 @@ authrouter.post('/login',async (req, res) => {
         if(!people){
             throw new Error("invasslid Crentials")
         }
-     const passMatch = await people.verifyPassward(req.body.passward)  
+     const passMatch = await people.verifyPassward(req.body.passward)  // userschema m method hai eska
     if(!passMatch){
                   throw new Error("invalid pass")}
 
                   
-        const tocken = people.getJWT() 
+        const tocken = people.getJWT() // userschema m method hai eska
         res.cookie("tocken",tocken,{
             httpOnly: true, 
             secure: process.env.NODE_ENV === "production", 
@@ -58,12 +58,12 @@ authrouter.post('/logout',userAuth, async (req, res) => {
     try{
         const {tocken} = req.cookies;
         
-       const payload = jwt.decode(tocken);
+       const payload = jwt.decode(tocken);  //# hear we are decoding the tocken mean getting all value prsnt in tocken ,, at the time of login we are creating tocken with some value or sign it in jwt.sign
        console.log(payload);
        
-       await redisClient.set(`tocken${tocken}`,"blocked")
+       await redisClient.set(`tocken${tocken}`,"blocked")  //#blocked is a value ,given to that tocken , suppose like obj in key value pair
     //    await redisClient.expire(`tocken${tocken}`,1800) //# time in sec
-       await redisClient.expireAt(`tocken${tocken}`,payload.exp)
+       await redisClient.expireAt(`tocken${tocken}`,payload.exp) //# hear we are add expire time of tocken in redis // by this we can block the tocken
 
         res.cookie("tocken" , null ,{expires: new Date(Date.now()),
         }) 
