@@ -12,7 +12,7 @@ const rateLimiter = async (req, res, next) => {
     // console.log(`Cooldown TTL: ${cooldownTTL}`);
     if (cooldownTTL > 0) {
       res.setHeader('Retry-After', cooldownTTL);
-      return res.status(429).send(`🕐 Please wait ${cooldownTTL}s before your next request.`);
+      return res.status(429).send(`🕐 Please wait ok. ${cooldownTTL}s before your next request.`);
     }
 
 // 2. Check Rate Limit
